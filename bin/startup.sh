@@ -14,36 +14,34 @@ fi
 # to a Windows dev environment
 INSTALLER=$(which brew)
 
-# Okay, we've got our "installer" installed we'll check or install:
-# - Node, Ghost
-if [ "$(which ghost 2>/dev/null)" == "" ]; then
-    if [ "$(which node 2>/dev/null)" == "" ]; then
-	# If not install version 10 that ghost blog requires
-	echo "INSTALLING: `node`"
-	${INSTALLER} install node@10
-	NODE="$(which node)"
-	NPM="$(which npm)"
-    # If node *is* installed but not v10 exactly...
-    elif [ "$(node --version | cut -d'.' -f1 | cut -c2-)" != "10" ]; then
-	echo "INSTALLING: `node@10`"
-	${INSTALLER} install node@10
-	INSTALL_PREFIX="$(brew config | grep HOMEBREW_PREFIX | cut -d' ' -f2)"
-	NODE10="${INSTALL_PREFIX}/opt/node@10/bin"
-	NODE="${NODE10}/node"
-	NPM="${NODE10}/npm"
-    else
-	NODE="$(which node)"
-	NPM="$(which npm)"
+if [ "$(which node 2>/dev/null)" == "" ]; then
+    ${INSTALLER} install node@10
+    ${INSTALLER} unlink node
+    ${INSTALLER} link --force --overwrite node@10
+elif [ "$(node --version | cut -d'.' -f1 | cut -c2-)" != "10" ]; then
+    echo "WARNING: About to install `node@10` which needs to change the default version"
+    echo "--- Do you wish to proceed? [ y / n ] ---"
+    read ANS
+    if [ "${ANS}" != "y" ] || [ "${ANS}" != "yes" ]; then
+	echo "ABORTING!"
+	exit 2
     fi
+    
+    ${INSTALLER} install node@10
+    ${INSTALLER} unlink node
+    ${INSTALLER} link --force --overwrite node@10
+fi
 
+# Okay lets install `ghost` now
+if [ "$(which ghost 2>/dev/null)" == "" ]; then
     # Install ghost CLI
     echo "INSTALLING: `ghost`"
-    ${NPM} install ghost-cli@latest -g
+    npm install ghost-cli@latest -g
 fi
 
 WEBSITE_DIR="www"
 
 cd ${DIR}/..
-mkdir "${WEBSITE_DIR}"
+mkdir -p "${WEBSITE_DIR}"
 cd "${WEBSITE_DIR}"
 ghost install local
