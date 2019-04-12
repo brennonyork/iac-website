@@ -41,5 +41,9 @@ if [ "$(which ghost 2>/dev/null)" == "" ]; then
     ${NPM} install ghost-cli@latest -g
 fi
 
-cd ${DIR}/../
-echo `pwd`
+WEBSITE_DIR="www"
+
+cd ${DIR}/..
+mkdir "${WEBSITE_DIR}"
+cd "${WEBSITE_DIR}"
+ghost install local
