@@ -1,6 +1,9 @@
 # Emacs
 *~
 
+# Website dir
+www/
+
 # Logs
 logs
 *.log
