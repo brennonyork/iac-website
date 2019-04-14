@@ -1,7 +1,16 @@
 #!/bin/bash
 
+#####
+# This script will run and bootstrap an OSX machine with a development
+# environment to begin building themes, testing features for the website,
+# and generally working with the codebase.
+#####
+
 # From - https://stackoverflow.com/a/246128
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/.."
+
+# Source in our constants. We always start our scripts with this :)
+source "${ROOT}/bin/constants.sh"
 
 # Assuming we're on a Mac from here on... (sorry Windows devs)
 if [ "$(which brew 2>/dev/null)" == "" ]; then
@@ -39,9 +48,11 @@ if [ "$(which ghost 2>/dev/null)" == "" ]; then
     npm install ghost-cli@latest -g
 fi
 
-WEBSITE_DIR="www"
+#WEBSITE_DIR="www"
 
 cd ${DIR}/..
 mkdir -p "${WEBSITE_DIR}"
 cd "${WEBSITE_DIR}"
+
+# TODO: check and see if ghost is already installed!
 ghost install local
